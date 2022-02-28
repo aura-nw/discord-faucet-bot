@@ -1,0 +1,20 @@
+{
+  "name": "discord-faucet-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "aura",
+    "network"
+  ],
+  "author": "auranw",
+  "license": "ISC",
+  "dependencies": {
+    "@cosmostation/cosmosjs": "^0.10",
+    "discord.js": "^12.3.1"
+  }
+}
