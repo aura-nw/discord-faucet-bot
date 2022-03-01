@@ -82,12 +82,7 @@ discord.on("message", async (mess) => {
       );
 
       cosmos.broadcast(signedTxBytes).then((response) => {
-        console.log(response);
-        if (response.height > 0) {
-          message.reply(`Tokens sent. Tx hash: ${response.txhash}`);
-        } else {
-          message.reply(`Tokens *not* not sent. Reason: ${response.raw_log}`);
-        }
+        mess.reply(`Tx hash: ${response.txhash}`);
       });
     });
   }
