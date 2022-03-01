@@ -83,9 +83,9 @@ discord.on("message", async (mess) => {
 
       cosmos.broadcast(signedTxBytes).then((response) => {
         if (response.tx_response.code == 0) {
-          mess.reply(`Tokens sent. Tx hash: ${response.txhash}`);
+          mess.reply(`Tokens sent. Tx hash: ${response.tx_response.txhash}`);
         } else {
-          mess.reply(`Tokens *not* not sent. Reason: ${response.raw_log}`);
+          mess.reply(`Tokens *not* not sent. Reason: ${response.tx_response.raw_log}`);
         }
       });
     });
