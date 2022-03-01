@@ -81,7 +81,8 @@ discord.on("message", async (mess) => {
         privKey
       );
 
-      cosmos.broadcast(signedTxBytes).then(function (response) {
+      cosmos.broadcast(signedTxBytes).then((response) => {
+        console.log(response);
         if (response.height > 0) {
           message.reply(`Tokens sent. Tx hash: ${response.txhash}`);
         } else {
