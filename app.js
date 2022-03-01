@@ -2,7 +2,6 @@ import fs from "fs";
 import { Cosmos } from "@cosmostation/cosmosjs";
 import message from "@cosmostation/cosmosjs/src/messages/proto.js";
 import Discord from "discord.js";
-import request from "request";
 
 let rawdata = fs.readFileSync("config.json");
 let config = JSON.parse(rawdata);
@@ -23,30 +22,6 @@ const pubKeyAny = cosmos.getPubKeyAny(privKey);
 const discord = new Discord.Client({ intents: ["GUILDS"] });
 const discordAuth = config.discordAuth;
 
-// broadcast
-async function broadcast(signedTxBytes, broadCastMode = "BROADCAST_MODE_SYNC") {
-  const txBytesBase64 = Buffer.from(signedTxBytes, "binary").toString("base64");
-
-  var options = {
-    method: "POST",
-    url: lcdUrl + "/cosmos/tx/v1beta1/txs",
-    headers: { "Content-Type": "application/json" },
-    body: { tx_bytes: txBytesBase64, mode: broadCastMode },
-    json: true,
-  };
-
-  return await new Promise(function (resolve, reject) {
-    request(options, function (error, response, body) {
-      if (error) return reject(error);
-      try {
-        resolve(body);
-      } catch (e) {
-        reject(e);
-      }
-    });
-  });
-}
-
 discord.on("message", async (mess) => {
   const msg = mess.content.toLowerCase();
 
@@ -59,7 +34,7 @@ discord.on("message", async (mess) => {
 
     // sending the fund
     mess.reply(`Sending 10aura to: ${addressTo}`);
-    cosmos.getAccounts(address).then(async (data) => {
+    cosmos.getAccounts(address).then((data) => {
       // ---------------------------------- (1)txBody ----------------------------------
       const msgSend = new message.cosmos.bank.v1beta1.MsgSend({
         from_address: address,
@@ -106,13 +81,13 @@ discord.on("message", async (mess) => {
         privKey
       );
 
-      const response = await broadcast(signedTxBytes);
-      console.log(response);
-      if (response.height > 0) {
-        mess.reply(`Tokens sent. Tx hash: ${response.txhash}`);
-      } else {
-        mess.reply(`Tokens *not* not sent. Reason: ${response.raw_log}`);
-      }
+      cosmos.broadcast(signedTxBytes).then((response) => {
+        if (response.tx_response.code == 0) {
+          mess.reply(`Tokens sent. Tx hash: ${response.txhash}`);
+        } else {
+          mess.reply(`Tokens *not* not sent. Reason: ${response.raw_log}`);
+        }
+      });
     });
   }
 });
