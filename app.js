@@ -34,63 +34,68 @@ discord.on("message", async (mess) => {
 
     // sending the fund
     mess.reply(`Sending ${config.AmountSend / 1e6} aura to: ${addressTo}`);
-    cosmos.getAccounts(address).then((data) => {
-      // ---------------------------------- (1)txBody ----------------------------------
-      const msgSend = new message.cosmos.bank.v1beta1.MsgSend({
-        from_address: address,
-        to_address: addressTo,
-        amount: [{ denom: denom, amount: String(config.AmountSend) }], // 7 decimal places (1000000 uaura = 1 AURA)
-      });
+    try {
+      cosmos.getAccounts(address).then((data) => {
+        // ---------------------------------- (1)txBody ----------------------------------
+        const msgSend = new message.cosmos.bank.v1beta1.MsgSend({
+          from_address: address,
+          to_address: addressTo,
+          amount: [{ denom: denom, amount: String(config.AmountSend) }], // 7 decimal places (1000000 uaura = 1 AURA)
+        });
 
-      const msgSendAny = new message.google.protobuf.Any({
-        type_url: "/cosmos.bank.v1beta1.MsgSend",
-        value: message.cosmos.bank.v1beta1.MsgSend.encode(msgSend).finish(),
-      });
+        const msgSendAny = new message.google.protobuf.Any({
+          type_url: "/cosmos.bank.v1beta1.MsgSend",
+          value: message.cosmos.bank.v1beta1.MsgSend.encode(msgSend).finish(),
+        });
 
-      const txBody = new message.cosmos.tx.v1beta1.TxBody({
-        messages: [msgSendAny],
-        memo: config.memo,
-      });
+        const txBody = new message.cosmos.tx.v1beta1.TxBody({
+          messages: [msgSendAny],
+          memo: config.memo,
+        });
 
-      // --------------------------------- (2)authInfo ---------------------------------
-      const signerInfo = new message.cosmos.tx.v1beta1.SignerInfo({
-        public_key: pubKeyAny,
-        mode_info: {
-          single: {
-            mode: message.cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT,
+        // --------------------------------- (2)authInfo ---------------------------------
+        const signerInfo = new message.cosmos.tx.v1beta1.SignerInfo({
+          public_key: pubKeyAny,
+          mode_info: {
+            single: {
+              mode: message.cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT,
+            },
           },
-        },
-        sequence: data.account.sequence,
-      });
+          sequence: data.account.sequence,
+        });
 
-      const feeValue = new message.cosmos.tx.v1beta1.Fee({
-        amount: [{ denom: denom, amount: String(config.feeAmount) }],
-        gas_limit: config.gasLimit,
-      });
+        const feeValue = new message.cosmos.tx.v1beta1.Fee({
+          amount: [{ denom: denom, amount: String(config.feeAmount) }],
+          gas_limit: config.gasLimit,
+        });
 
-      const authInfo = new message.cosmos.tx.v1beta1.AuthInfo({
-        signer_infos: [signerInfo],
-        fee: feeValue,
-      });
+        const authInfo = new message.cosmos.tx.v1beta1.AuthInfo({
+          signer_infos: [signerInfo],
+          fee: feeValue,
+        });
 
-      // -------------------------------- sign --------------------------------
-      const signedTxBytes = cosmos.sign(
-        txBody,
-        authInfo,
-        data.account.account_number,
-        privKey
-      );
+        // -------------------------------- sign --------------------------------
+        const signedTxBytes = cosmos.sign(
+          txBody,
+          authInfo,
+          data.account.account_number,
+          privKey
+        );
 
-      cosmos.broadcast(signedTxBytes).then((response) => {
-        if (response.tx_response.code == 0) {
-          mess.reply(`Tokens sent. Tx hash: ${response.tx_response.txhash}`);
-        } else {
-          mess.reply(
-            `Tokens *not* sent. Reason: ${response.tx_response.raw_log}`
-          );
-        }
+        cosmos.broadcast(signedTxBytes).then((response) => {
+          if (response.tx_response.code == 0) {
+            mess.reply(`Tokens sent. Tx hash: ${response.tx_response.txhash}`);
+          } else {
+            mess.reply(
+              `Tokens *not* sent. Reason: ${response.tx_response.raw_log}`
+            );
+          }
+        });
       });
-    });
+    } catch (error) {
+      mess.reply(`Something went wrong!`);
+      console.log(error);
+    }
   }
 });
 
