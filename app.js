@@ -2,6 +2,7 @@ import fs from "fs";
 import { Cosmos } from "@cosmostation/cosmosjs";
 import message from "@cosmostation/cosmosjs/src/messages/proto.js";
 import Discord from "discord.js";
+import request from "request";
 
 let rawdata = fs.readFileSync("config.json");
 let config = JSON.parse(rawdata);
