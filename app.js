@@ -107,6 +107,7 @@ discord.on("message", async (mess) => {
       );
 
       const response = await broadcast(signedTxBytes);
+      console.log(response);
       if (response.height > 0) {
         mess.reply(`Tokens sent. Tx hash: ${response.txhash}`);
       } else {
