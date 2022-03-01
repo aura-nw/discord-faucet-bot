@@ -34,7 +34,7 @@ discord.on("message", async (mess) => {
 
     // sending the fund
     mess.reply(`Sending 10aura to: ${addressTo}`);
-    cosmos.getAccounts(address).then((data) => {
+    cosmos.getAccounts(address).then(async (data) => {
       // ---------------------------------- (1)txBody ----------------------------------
       const msgSend = new message.cosmos.bank.v1beta1.MsgSend({
         from_address: address,
@@ -81,9 +81,12 @@ discord.on("message", async (mess) => {
         privKey
       );
 
-      cosmos.broadcast(signedTxBytes).then((response) => {
-        mess.reply(`Tx hash: ${response.txhash}`);
-      });
+      const response = await cosmos.broadcast(signedTxBytes);
+      if (response.height > 0) {
+        message.reply(`Tokens sent. Tx hash: ${response.txhash}`);
+      } else {
+        message.reply(`Tokens *not* not sent. Reason: ${response.raw_log}`);
+      }
     });
   }
 });
