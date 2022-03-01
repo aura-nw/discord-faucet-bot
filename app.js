@@ -33,7 +33,7 @@ discord.on("message", async (mess) => {
     }
 
     // sending the fund
-    mess.reply(`Sending 10aura to: ${addressTo}`);
+    mess.reply(`Sending ${config.AmountSend / 1e6} aura to: ${addressTo}`);
     cosmos.getAccounts(address).then((data) => {
       // ---------------------------------- (1)txBody ----------------------------------
       const msgSend = new message.cosmos.bank.v1beta1.MsgSend({
@@ -85,7 +85,9 @@ discord.on("message", async (mess) => {
         if (response.tx_response.code == 0) {
           mess.reply(`Tokens sent. Tx hash: ${response.tx_response.txhash}`);
         } else {
-          mess.reply(`Tokens *not* not sent. Reason: ${response.tx_response.raw_log}`);
+          mess.reply(
+            `Tokens *not* sent. Reason: ${response.tx_response.raw_log}`
+          );
         }
       });
     });
