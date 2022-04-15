@@ -2,6 +2,9 @@ import fs from "fs";
 import { Cosmos } from "@cosmostation/cosmosjs";
 import message from "@cosmostation/cosmosjs/src/messages/proto.js";
 import Discord from "discord.js";
+import NodeCache from "node-cache";
+
+const cache = new NodeCache({ stdTTL: 24*60*60});
 
 let rawdata = fs.readFileSync("config.json");
 let config = JSON.parse(rawdata);
@@ -31,7 +34,20 @@ discord.on("message", async (mess) => {
     if (addressTo.length < 43) {
       return;
     }
-
+    let numberGetFaucet = cache.get(addressTo);
+    if (numberGetFaucet) {
+      if (numberGetFaucet >= 10){
+        console.log("Limit reached");
+        return mess.reply({"response":"You have reached the limit of 10 transactions per day"});
+      }	
+      else{
+        numberGetFaucet += 1;
+        cache.set(addressTo, numberGetFaucet);
+      }
+    } else {
+      numberGetFaucet = 1;
+      cache.set(addressTo, numberGetFaucet);
+    }
     // sending the fund
     mess.reply(`Sending ${config.AmountSend / 1e6} aura to: ${addressTo}`);
     try {
