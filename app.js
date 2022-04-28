@@ -36,9 +36,9 @@ discord.on("message", async (mess) => {
     }
     let numberGetFaucet = cache.get(addressTo);
     if (numberGetFaucet) {
-      if (numberGetFaucet >= 10){
+      if (numberGetFaucet >= 5){
         console.log("Limit reached");
-        return mess.reply("You have reached the limit of 10 transactions per day");
+        return mess.reply("You have reached the limit of 5 transactions per day");
       }	
       else{
         numberGetFaucet += 1;
