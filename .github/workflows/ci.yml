@@ -20,8 +20,6 @@ jobs:
         echo REPO_MANIFEST_NAME=gitops >> $GITHUB_ENV
         echo REPO_MANIFEST_URL=github.com/aura-nw/gitops.git >> $GITHUB_ENV
         echo REPO_MANIFEST_BRANCH=master >> $GITHUB_ENV
-        echo REPO_MANIFEST_ENV_DEV=./clusters/k8s-dev/explorer >> $GITHUB_ENV
-        echo REPO_MANIFEST_ENV_MAIN=./clusters/k8s-prod/explorer >> $GITHUB_ENV
         echo REPO_MANIFEST_ENV_EUPHORIA=./clusters/k8s-testnet-euphoria/discord-faucet-bot >> $GITHUB_ENV
         echo REPO_MANIFEST_ENV_SERENITY=./clusters/k8s-testnet-serenity/discord-faucet-bot >> $GITHUB_ENV
         echo REPO_MANIFEST_ENV_HALO=./clusters/k8s-testnet-halo/discord-faucet-bot >> $GITHUB_ENV
