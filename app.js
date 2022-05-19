@@ -108,10 +108,7 @@ const discordAuth = config.discordAuth;
 let isProcessing = false;
 
 async function giveFaucet(mess) {
-  console.log("after give faucet 1", isProcessing);
-  console.log("queue", queue.length());
   if (queue.length() > 0) {
-    console.log("after give faucet 2", isProcessing);
     if (isProcessing) return;
     isProcessing = true;
   }
