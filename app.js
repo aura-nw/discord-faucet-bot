@@ -153,7 +153,7 @@ discord.on("message", async (mess) => {
       } aura. Chill out! ${addressTo}`
     );
     try {
-      if (isProcessing) giveFaucet(mess);
+      if (!isProcessing) giveFaucet(mess);
     } catch (error) {
       mess.reply(`Something went wrong!`);
       console.log(error);
