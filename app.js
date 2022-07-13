@@ -76,7 +76,7 @@ const queue = async.queue((objAddress, completed) => {
     // The number of addresses to be processed
     const remaining = queue.length();
     completed(null, { objAddress, remaining });
-  }, 2000);
+  }, 5000);
 }, 1); // The concurrency value is 1
 
 // Executes the callback when the queue is done processing all the addresses
