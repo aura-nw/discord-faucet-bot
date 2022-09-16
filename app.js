@@ -59,7 +59,7 @@ const queue = async.queue((objAddress, completed) => {
     cosmos.broadcast(signedTxBytes).then((response) => {
       if (response.tx_response.code == 0) {
         objAddress.mess.reply(
-          `Tokens sent. Tx hash: https://euphoria.aurascan.io/transaction/${response.tx_response.txhash}`
+          `Tokens sent. Tx hash: https://testnet.mintscan.io/evmos-testnet/txs/${response.tx_response.txhash}`
         );
         isProcessing = false;
       } else {
@@ -96,7 +96,7 @@ const lcdUrl = config.lcdUrl;
 const denom = config.denom;
 const cosmos = new Cosmos(lcdUrl, chainId);
 cosmos.setBech32MainPrefix(config.prefix);
-cosmos.setPath("m/44'/118'/0'/0/0");
+cosmos.setPath("m/44'/60'/0'/0/0");
 const address = cosmos.getAddress(mnemonic);
 const privKey = cosmos.getECPairPriv(mnemonic);
 const pubKeyAny = cosmos.getPubKeyAny(privKey);
@@ -152,8 +152,8 @@ discord.on("message", async (mess) => {
     });
     mess.reply(
       `You are in queue to get ${
-        config.AmountSend / 1e6
-      } eaura. Chill out! ${addressTo}`
+        config.AmountSend / 1e18
+      } tevmos. Chill out! ${addressTo}`
     );
     try {
       console.log("before give faucet", isProcessing);
