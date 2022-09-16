@@ -118,7 +118,7 @@ discord.on("message", async (mess) => {
   const msg = mess.content.toLowerCase();
 
   if (msg.startsWith("i love aura")) {
-    const addressTo = msg.substring(12, 56);
+    const addressTo = msg.substring(12, 57);
 
     if (addressTo.length < 44) {
       return;
