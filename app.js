@@ -15,9 +15,9 @@ const denom = config.denom;
 const exec_promise = util.promisify(exec);
 
 // Defining the queue
-const queue = async.queue((objAddress, completed) => {
+const queue = async.queue(async (objAddress, completed) => {
   console.log("Currently Busy Processing address " + objAddress.addressTo);
-  const { stdout, stderr } = exec_promise(`./bin/evmosd tx bank send faucet ${objAddress.addressTo} ${config.AmountSend}${denom} --fees ${config.feeAmount}${denom} --chain-id ${chainId} --node https://tendermint.bd.evmos.dev:26657 --home . --keyring-backend test -y --output json`);
+  const { stdout, stderr } = await exec_promise(`./bin/evmosd tx bank send faucet ${objAddress.addressTo} ${config.AmountSend}${denom} --fees ${config.feeAmount}${denom} --chain-id ${chainId} --node https://tendermint.bd.evmos.dev:26657 --home . --keyring-backend test -y --output json`);
   const json =  JSON.parse(stdout);
   if (json.code == 0){
     objAddress.mess.reply(`Tokens sent. Tx hash: https://testnet.mintscan.io/evmos-testnet/txs/${json.txhash}`);
