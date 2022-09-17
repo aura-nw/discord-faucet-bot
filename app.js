@@ -51,7 +51,7 @@ const discordAuth = config.discordAuth;
 
 let isProcessing = false;
 
-async function giveFaucet(mess) {
+async function giveFaucet() {
   if (queue.length() > 0) {
     if (isProcessing) return;
     isProcessing = true;
@@ -83,7 +83,7 @@ discord.on("message", async (mess) => {
       cache.set(addressTo, numberGetFaucet);
     }
     // add to queue and sending the fund
-    queue.push({ addressTo, mess }, (error, { mess, remaining }) => {
+    queue.push({ addressTo, mess }, (error, { remaining }) => {
       if (error) {
         console.log(
           `An error occurred while processing address ${addressTo}`
@@ -101,7 +101,7 @@ discord.on("message", async (mess) => {
     );
     try {
       console.log("before give faucet", isProcessing);
-      if (!isProcessing) giveFaucet(mess);
+      if (!isProcessing) giveFaucet();
     } catch (error) {
       mess.reply(`Something went wrong!`);
       console.log(error);
