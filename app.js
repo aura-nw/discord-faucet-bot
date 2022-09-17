@@ -16,7 +16,7 @@ const exec_promise = util.promisify(exec);
 
 // Defining the queue
 const queue = async.queue((objAddress, completed) => {
-  console.log("Currently Busy Processing address " + address);
+  console.log("Currently Busy Processing address " + objAddress.addressTo);
   const { stdout, stderr } = exec_promise(`./bin/evmosd tx bank send faucet ${objAddress.addressTo} ${config.AmountSend}${denom} --fees ${config.feeAmount}${denom} --chain-id ${chainId} --node https://tendermint.bd.evmos.dev:26657 --home . --keyring-backend test -y --output json`);
   const json =  JSON.parse(stdout);
   if (json.code == 0){
