@@ -84,16 +84,16 @@ discord.on("message", async (mess) => {
     }
     // add to queue and sending the fund
     queue.push({ addressTo, mess }, (error, { remaining }) => {
-      if (error) {
-        console.log(
-          `An error occurred while processing address ${addressTo}`
-        );
-      } else {
-        console.log(
-          `Finished processing address ${addressTo}. ${remaining} addresses remaining`
-        );
-      }
-    });
+        if (error) {
+          console.log(
+            `An error occurred while processing address ${addressTo}`
+          );
+        } else {
+          console.log(
+            `Finished processing address ${addressTo}. ${remaining} addresses remaining`
+          );
+        }
+      });
     mess.reply(
       `You are in queue to get ${
         config.AmountSend / 1e18
