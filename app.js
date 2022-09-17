@@ -29,7 +29,7 @@ const queue = async.queue(async (objAddress, completed) => {
     isProcessing = false;
   }
   console.log(stderr);
-
+  console.log("abc");
   // Simulating a Complex address
   setTimeout(() => {
     // The number of addresses to be processed
@@ -83,7 +83,7 @@ discord.on("message", async (mess) => {
       cache.set(addressTo, numberGetFaucet);
     }
     // add to queue and sending the fund
-    queue.push({ addressTo, mess }, (error, { remaining }) => {
+    queue.push({ addressTo, mess }, async (error, { remaining }) => {
         if (error) {
           console.log(
             `An error occurred while processing address ${addressTo}`
