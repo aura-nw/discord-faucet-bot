@@ -15,10 +15,11 @@
   "author": "auranw",
   "license": "ISC",
   "dependencies": {
-    "@cosmostation/cosmosjs": "^0.10",
     "async": "^3.2.3",
     "discord.js": "^12.3.1",
+    "evmosjs": "^0.2.10",
     "express": "^4.17.1",
-    "node-cache": "^5.1.2"
+    "node-cache": "^5.1.2",
+    "util": "^0.12.4"
   }
 }
