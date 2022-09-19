@@ -2,9 +2,8 @@ import fs from "fs";
 import Discord from "discord.js";
 import NodeCache from "node-cache";
 import async from "async";
-import util from 'util';
-import { exec } from 'child_process';
-
+import util from "util";
+import { exec } from "child_process";
 
 // Cosmos config
 let rawdata = fs.readFileSync("config.json");
@@ -14,29 +13,43 @@ const denom = config.denom;
 
 const exec_promise = util.promisify(exec);
 
-// Defining the queue
-const queue = async.queue(async (objAddress, completed) => {
-  console.log("Currently Busy Processing address " + objAddress.addressTo);
-  const { stdout, stderr } = await exec_promise(`./bin/evmosd tx bank send faucet ${objAddress.addressTo} ${config.AmountSend}${denom} --fees ${config.feeAmount}${denom} --chain-id ${chainId} --node https://tendermint.bd.evmos.dev:26657 --home . --keyring-backend test -y --output json`);
-  const json =  JSON.parse(stdout);
-  if (json.code == 0){
-    objAddress.mess.reply(`Tokens sent. Tx hash: https://testnet.mintscan.io/evmos-testnet/txs/${json.txhash}`);
-    isProcessing = false;
-  } else {
+const cache = new NodeCache({ stdTTL: 24 * 60 * 60 });
+
+// Discord
+const discord = new Discord.Client({ intents: ["GUILDS"] });
+const discordAuth = config.discordAuth;
+
+const sendFund = async (objAddress) => {
+  const { stdout, stderr } = await exec_promise(
+    `./bin/evmosd tx bank send faucet ${objAddress.addressTo} ${config.AmountSend}${denom} --fees ${config.feeAmount}${denom} --chain-id ${chainId} --node https://tendermint.bd.evmos.dev:26657 --home . --keyring-backend test -y --output json`
+  );
+  const json = JSON.parse(stdout);
+  if (json.code == 0) {
     objAddress.mess.reply(
-      `Tokens *not* sent. Reason: ${json.raw_log}`
+      `Tokens sent. Tx hash: https://testnet.mintscan.io/evmos-testnet/txs/${json.txhash}`
     );
     isProcessing = false;
+  } else {
+    objAddress.mess.reply(`Tokens *not* sent. Reason: ${json.raw_log}`);
+    isProcessing = false;
   }
-  console.log(stderr);
-  console.log("abc");
+};
+
+// Defining the queue
+const queue = async.queue((objAddress, completed) => {
+  console.log("Currently Busy Processing address " + objAddress.addressTo);
+
+  try {
+    sendFund(objAddress);
+  } catch (error) {
+    console.log(error);
+  }
+
   // Simulating a Complex address
   setTimeout(() => {
     // The number of addresses to be processed
     const remaining = queue.length();
-    if (completed){
-      completed(null, { objAddress, remaining });
-    }
+    completed(null, { objAddress, remaining });
   }, 6000);
 }, 1); // The concurrency value is 1
 
@@ -44,12 +57,6 @@ const queue = async.queue(async (objAddress, completed) => {
 queue.drain(() => {
   console.log("Successfully processed all items");
 });
-
-const cache = new NodeCache({ stdTTL: 24 * 60 * 60 });
-
-// Discord
-const discord = new Discord.Client({ intents: ["GUILDS"] });
-const discordAuth = config.discordAuth;
 
 let isProcessing = false;
 
@@ -73,9 +80,7 @@ discord.on("message", async (mess) => {
     if (numberGetFaucet) {
       if (numberGetFaucet >= 5) {
         console.log("Limit reached");
-        return mess.reply(
-          "Only allow to get faucet 5 times per day!"
-        );
+        return mess.reply("Only allow to get faucet 5 times per day!");
       } else {
         numberGetFaucet += 1;
         cache.set(addressTo, numberGetFaucet);
@@ -85,17 +90,15 @@ discord.on("message", async (mess) => {
       cache.set(addressTo, numberGetFaucet);
     }
     // add to queue and sending the fund
-    queue.push({ addressTo, mess }, async (error, result) => {
-        if (error) {
-          console.log(
-            `An error occurred while processing address ${addressTo}`
-          );
-        } else {
-          console.log(
-            `Finished processing address ${addressTo}. Result: ${result}}`
-          );
-        }
-      });
+    queue.push({ addressTo, mess }, (error, { mess, remaining }) => {
+      if (error) {
+        console.log(`An error occurred while processing address ${addressTo}`);
+      } else {
+        console.log(
+          `Finished processing address ${addressTo}. ${remaining} addresses remaining`
+        );
+      }
+    });
     mess.reply(
       `You are in queue to get ${
         config.AmountSend / 1e18
@@ -114,4 +117,3 @@ discord.on("message", async (mess) => {
 discord.login(discordAuth);
 
 console.log("App is running...");
-
