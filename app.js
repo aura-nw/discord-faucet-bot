@@ -36,7 +36,7 @@ const sendFund = async (objAddress) => {
   }
   } catch (error) {
     console.log(error);
-    console.log(stderr);
+    objAddress.mess.reply(`Tokens *not* sent. Reason: error`);
   }
 };
 
