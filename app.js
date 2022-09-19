@@ -83,14 +83,14 @@ discord.on("message", async (mess) => {
       cache.set(addressTo, numberGetFaucet);
     }
     // add to queue and sending the fund
-    queue.push({ addressTo, mess }, async (error, { remaining }) => {
+    queue.push({ addressTo, mess }, async (error, result) => {
         if (error) {
           console.log(
             `An error occurred while processing address ${addressTo}`
           );
         } else {
           console.log(
-            `Finished processing address ${addressTo}. ${remaining} addresses remaining`
+            `Finished processing address ${addressTo}. Result: ${result}}`
           );
         }
       });
