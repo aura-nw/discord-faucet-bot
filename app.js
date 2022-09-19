@@ -36,6 +36,7 @@ const sendFund = async (objAddress) => {
   }
   } catch (error) {
     console.log(error);
+    console.log(stderr);
   }
 };
 
