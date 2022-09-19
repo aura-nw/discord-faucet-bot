@@ -34,7 +34,9 @@ const queue = async.queue(async (objAddress, completed) => {
   setTimeout(() => {
     // The number of addresses to be processed
     const remaining = queue.length();
-    completed(null, { objAddress, remaining });
+    if (completed){
+      completed(null, { objAddress, remaining });
+    }
   }, 6000);
 }, 1); // The concurrency value is 1
 
