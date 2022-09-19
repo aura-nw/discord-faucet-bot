@@ -50,7 +50,7 @@ const queue = async.queue((objAddress, completed) => {
     // The number of addresses to be processed
     const remaining = queue.length();
     completed(null, { objAddress, remaining });
-  }, 6000);
+  }, 10000);
 }, 1); // The concurrency value is 1
 
 // Executes the callback when the queue is done processing all the addresses
@@ -78,9 +78,9 @@ discord.on("message", async (mess) => {
     }
     let numberGetFaucet = cache.get(addressTo);
     if (numberGetFaucet) {
-      if (numberGetFaucet >= 5) {
+      if (numberGetFaucet >= 1) {
         console.log("Limit reached");
-        return mess.reply("Only allow to get faucet 5 times per day!");
+        return mess.reply("Only allow to get faucet once a day!");
       } else {
         numberGetFaucet += 1;
         cache.set(addressTo, numberGetFaucet);
@@ -105,7 +105,6 @@ discord.on("message", async (mess) => {
       } tevmos. Chill out! ${addressTo}`
     );
     try {
-      console.log("before give faucet", isProcessing);
       if (!isProcessing) giveFaucet();
     } catch (error) {
       mess.reply(`Something went wrong!`);
