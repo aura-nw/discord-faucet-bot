@@ -20,7 +20,8 @@ const discord = new Discord.Client({ intents: ["GUILDS"] });
 const discordAuth = config.discordAuth;
 
 const sendFund = async (objAddress) => {
-  const { stdout, stderr } = await exec_promise(
+  try {
+    const { stdout, stderr } = await exec_promise(
     `./bin/evmosd tx bank send faucet ${objAddress.addressTo} ${config.AmountSend}${denom} --fees ${config.feeAmount}${denom} --chain-id ${chainId} --node https://tendermint.bd.evmos.dev:26657 --home . --keyring-backend test -y --output json`
   );
   const json = JSON.parse(stdout);
@@ -32,6 +33,9 @@ const sendFund = async (objAddress) => {
   } else {
     objAddress.mess.reply(`Tokens *not* sent. Reason: ${json.raw_log}`);
     isProcessing = false;
+  }
+  } catch (error) {
+    console.log(error);
   }
 };
 
