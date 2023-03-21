@@ -117,51 +117,49 @@ async function giveFaucet(mess) {
 discord.on("message", async (mess) => {
   const msg = mess.content.toLowerCase();
 
-  if (msg.startsWith("i love aura")) {
-    const addressTo = msg.substring(12, 55);
+  const addressTo = msg;
 
-    if (addressTo.length < 43) {
-      return;
-    }
-    let numberGetFaucet = cache.get(addressTo);
-    if (numberGetFaucet) {
-      if (numberGetFaucet >= 5) {
-        console.log("Limit reached");
-        return mess.reply(
-          "Only allow to get faucet 5 times per day!"
-        );
-      } else {
-        numberGetFaucet += 1;
-        cache.set(addressTo, numberGetFaucet);
-      }
+  if (addressTo.length < 43) {
+    return;
+  }
+  let numberGetFaucet = cache.get(addressTo);
+  if (numberGetFaucet) {
+    if (numberGetFaucet >= 5) {
+      console.log("Limit reached");
+      return mess.reply(
+        "Only allow to get faucet 5 times per day!"
+      );
     } else {
-      numberGetFaucet = 1;
+      numberGetFaucet += 1;
       cache.set(addressTo, numberGetFaucet);
     }
-    // add to queue and sending the fund
-    queue.push({ addressTo, mess }, (error, { mess, remaining }) => {
-      if (error) {
-        console.log(
-          `An error occurred while processing address ${addressTo}`
-        );
-      } else {
-        console.log(
-          `Finished processing address ${addressTo}. ${remaining} addresses remaining`
-        );
-      }
-    });
-    mess.reply(
-      `You are in queue to get ${
-        config.AmountSend / 1e6
-      } eaura. Chill out! ${addressTo}`
-    );
-    try {
-      console.log("before give faucet", isProcessing);
-      if (!isProcessing) giveFaucet(mess);
-    } catch (error) {
-      mess.reply(`Something went wrong!`);
-      console.log(error);
+  } else {
+    numberGetFaucet = 1;
+    cache.set(addressTo, numberGetFaucet);
+  }
+  // add to queue and sending the fund
+  queue.push({ addressTo, mess }, (error, { mess, remaining }) => {
+    if (error) {
+      console.log(
+        `An error occurred while processing address ${addressTo}`
+      );
+    } else {
+      console.log(
+        `Finished processing address ${addressTo}. ${remaining} addresses remaining`
+      );
     }
+  });
+  mess.reply(
+    `You are in queue to get ${
+      config.AmountSend / 1e6
+    } eaura. Chill out! ${addressTo}`
+  );
+  try {
+    console.log("before give faucet", isProcessing);
+    if (!isProcessing) giveFaucet(mess);
+  } catch (error) {
+    mess.reply(`Something went wrong!`);
+    console.log(error);
   }
 });
 
