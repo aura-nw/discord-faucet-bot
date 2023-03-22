@@ -117,8 +117,8 @@ async function giveFaucet(mess) {
 discord.on("message", async (mess) => {
   const msg = mess.content.toLowerCase();
 
-  if (msg.startsWith("gm ")) {
-    const addressTo = msg.substring(3, 46);
+  if (msg.startsWith("!")) {
+    const addressTo = msg.substring(1, 44);
 
     if (addressTo.length < 43) {
       return;
