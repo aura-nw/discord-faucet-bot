@@ -117,7 +117,7 @@ async function giveFaucet(mess) {
 discord.on("message", async (mess) => {
   const msg = mess.content.toLowerCase();
 
-  const addressTo = msg.substring(1, 44);
+  const addressTo = msg.substring(0, 43);
 
   if (addressTo.length < 43) {
     return;
