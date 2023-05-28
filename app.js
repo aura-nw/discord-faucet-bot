@@ -59,7 +59,7 @@ const queue = async.queue((objAddress, completed) => {
     cosmos.broadcast(signedTxBytes).then((response) => {
       if (response.tx_response.code == 0) {
         objAddress.mess.reply(
-          `Tokens sent. Tx hash: ${response.tx_response.txhash}`
+          `Tokens sent. Tx hash: https://serenity.aurascan.io/transaction/${response.tx_response.txhash}`
         );
         isProcessing = false;
       } else {
